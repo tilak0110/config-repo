@@ -1,23 +1,21 @@
 server:
-  servlet:
-    context-path: /order-service
-  port: 8082
+  port: 8080
 
 spring:
   application:
-    name: order-service
+    name: api-gateway
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/orderdb
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/order-service/**
 
 eureka:
   client:
@@ -25,6 +23,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
 
 management:
   endpoints:
